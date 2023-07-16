@@ -28,4 +28,8 @@ public class ChessPiece {
 
     @Column(name = "color", nullable = false)
     private int color;
+
+    @OneToOne
+    @JoinColumn(name = "lap_id")
+    private Lap lap;
 }

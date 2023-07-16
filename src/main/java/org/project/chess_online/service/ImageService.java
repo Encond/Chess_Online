@@ -16,11 +16,11 @@ public class ImageService {
         this.imageRepository = imageRepository;
     }
 
-    private List<Image> getAll() {
+    public List<Image> getAll() {
         return this.imageRepository.findAll();
     }
 
-    private Image findById(Long id) {
+    public Image findById(Long id) {
         return this.imageRepository.findById(id).get(); //.orElseGet(Image::new);
     }
 }

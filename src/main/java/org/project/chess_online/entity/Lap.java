@@ -32,4 +32,7 @@ public class Lap {
 
     @Column(name = "active")
     private boolean active;
+
+    @OneToOne(mappedBy = "lap")
+    private Chat chat;
 }

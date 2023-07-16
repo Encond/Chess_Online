@@ -16,15 +16,18 @@ public class ChessPieceService {
         this.chessPieceRepository = chessPieceRepository;
     }
 
-    private List<ChessPiece> getAll() {
+    public List<ChessPiece> getAll() {
         return this.chessPieceRepository.findAll();
     }
 
-    private ChessPiece findById(Long id) {
+    public ChessPiece findById(Long id) {
         return this.chessPieceRepository.findById(id).get(); // orElseGet(ChessPiece::new)
     }
 
-    private ChessPiece createChessPiece() {
-        return new ChessPiece();
+    public ChessPiece createChessPiece(ChessPiece chessPiece) {
+        if (chessPiece != null)
+            this.chessPieceRepository.save(chessPiece);
+
+        return this.findById(chessPiece.getIdChessPiece());
     }
 }
