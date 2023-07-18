@@ -5,8 +5,6 @@ import org.project.chess_online.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class ImageService {
     private final ImageRepository imageRepository;
@@ -16,11 +14,7 @@ public class ImageService {
         this.imageRepository = imageRepository;
     }
 
-    public List<Image> getAll() {
-        return this.imageRepository.findAll();
-    }
-
     public Image findById(Long id) {
-        return this.imageRepository.findById(id).get(); //.orElseGet(Image::new);
+        return this.imageRepository.findById(id).get(); // orElseGet(Image::new);
     }
 }

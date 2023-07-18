@@ -1,6 +1,5 @@
 package org.project.chess_online.security.request;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

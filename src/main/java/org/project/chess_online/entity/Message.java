@@ -1,5 +1,6 @@
 package org.project.chess_online.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_message")
-    private Long idChat;
+    private Long idMessage;
 
     @Column(name = "text")
     private String text;
@@ -26,5 +27,6 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "chat_id", nullable = false)
+    @JsonIgnore
     private Chat chat;
 }

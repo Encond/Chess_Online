@@ -47,11 +47,12 @@ public class WebSecurityConfig {
                                 .requestMatchers("image/**").permitAll()
                                 .requestMatchers("/api/auth/*").permitAll()
                                 .requestMatchers("/game/**").authenticated()
+                                .requestMatchers("/chat/**").authenticated()
                                 .anyRequest().authenticated()
 //                        .requestMatchers("/admin/**").hasRole("ADMIN")
 //                        .requestMatchers("/profile/**").hasRole("USER")
-                ).addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-//                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.loginPage("/login"));
+                ).addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.loginPage("/login"));
 
         return http.build();
     }

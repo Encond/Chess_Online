@@ -2,15 +2,14 @@ package org.project.chess_online.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Table(name = "chat")
 public class Chat {
     @Id
@@ -24,4 +23,13 @@ public class Chat {
 
     @OneToMany(mappedBy = "chat")
     private List<Message> messages;
+
+    public Chat() {
+        this.messages = new ArrayList<Message>();
+    }
+
+    public Chat(Lap lap) {
+        this.lap = lap;
+        this.messages = new ArrayList<Message>();
+    }
 }

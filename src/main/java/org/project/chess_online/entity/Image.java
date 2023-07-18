@@ -2,15 +2,11 @@ package org.project.chess_online.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Table(name = "image")
 public class Image {
     @Id
@@ -21,8 +17,12 @@ public class Image {
     @Basic
     @Lob
     @Column(name = "url", columnDefinition = "LONGBLOB", nullable = false)
-    private byte[] url;
+    private byte[] imageBytes;
 
-    @OneToMany(mappedBy = "image")
-    private List<ChessPiece> chessPieces;
+    public Image() {
+    }
+
+    public Image(byte[] imageBytes) {
+        this.imageBytes = imageBytes;
+    }
 }

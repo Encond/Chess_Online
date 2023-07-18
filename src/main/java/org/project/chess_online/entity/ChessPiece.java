@@ -2,13 +2,11 @@ package org.project.chess_online.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Table(name = "chess_piece")
 public class ChessPiece {
     @Id
@@ -16,7 +14,7 @@ public class ChessPiece {
     @Column(name = "id_chess_piece")
     private Long idChessPiece;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "image_id", referencedColumnName = "id_image", nullable = false)
     private Image image;
 
@@ -29,7 +27,13 @@ public class ChessPiece {
     @Column(name = "color", nullable = false)
     private int color;
 
-    @OneToOne
-    @JoinColumn(name = "lap_id")
-    private Lap lap;
+    public ChessPiece() {
+    }
+
+    public ChessPiece(Image image, String type, boolean onBoard, int color) {
+        this.image = image;
+        this.type = type;
+        this.onBoard = onBoard;
+        this.color = color;
+    }
 }

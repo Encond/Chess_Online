@@ -17,10 +17,6 @@ public class LapService {
         this.lapRepository = lapRepository;
     }
 
-    public List<Lap> getAll() {
-        return this.lapRepository.findAll();
-    }
-
     public Lap findById(Long id) {
         return this.lapRepository.findById(id).get(); // orElseGet(Lap::new);
     }

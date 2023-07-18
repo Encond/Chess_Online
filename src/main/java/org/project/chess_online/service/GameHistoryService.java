@@ -17,10 +17,6 @@ public class GameHistoryService {
         this.gameHistoryRepository = gameHistoryRepository;
     }
 
-    public List<GameHistory> getAll() {
-        return this.gameHistoryRepository.findAll();
-    }
-
     public GameHistory findById(Long id) {
         return this.gameHistoryRepository.findById(id).get(); //.orElseGet(GameHistory::new);
     }

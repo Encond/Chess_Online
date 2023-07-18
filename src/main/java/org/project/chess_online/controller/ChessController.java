@@ -1,7 +1,11 @@
 package org.project.chess_online.controller;
 
+import org.project.chess_online.dto.LapDTO;
+import org.project.chess_online.entity.Chat;
 import org.project.chess_online.entity.Lap;
 import org.project.chess_online.entity.User;
+import org.project.chess_online.facade.LapFacade;
+import org.project.chess_online.service.ChatService;
 import org.project.chess_online.service.LapService;
 import org.project.chess_online.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +21,17 @@ import java.util.List;
 @CrossOrigin
 public class ChessController {
     private final LapService lapService;
+    private final LapFacade lapFacade;
     private final UserService userService;
+    private final ChatService chatService;
     private List<User> userQueue;
 
     @Autowired
-    public ChessController(LapService lapService, UserService userService) {
+    public ChessController(LapService lapService, UserService userService, LapFacade lapFacade, ChatService chatService) {
         this.lapService = lapService;
         this.userService = userService;
+        this.lapFacade = lapFacade;
+        this.chatService = chatService;
 
         this.userQueue = new ArrayList<User>();
     }
@@ -51,9 +59,16 @@ public class ChessController {
     }
 
     @GetMapping("/play/{lapId}")
-    public ResponseEntity<Lap> playGame(@PathVariable("lapId") Long lapId) {
+    public ResponseEntity<LapDTO> playGame(@PathVariable("lapId") Long lapId) {
         Lap tempLap = this.lapService.findById(lapId);
+        Chat tempChat = this.chatService.createChat(tempLap);
 
-        return new ResponseEntity<>(tempLap, HttpStatus.OK);
+        if (tempChat != null) {
+            tempLap.setChat(tempChat);
+            LapDTO tempLapDTO = this.lapFacade.lapToLapDTO(tempLap);
+            return new ResponseEntity<>(tempLapDTO, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(new LapDTO(), HttpStatus.NOT_FOUND);
     }
 }
