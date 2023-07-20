@@ -14,7 +14,7 @@ public class ChessPiece {
     @Column(name = "id_chess_piece")
     private Long idChessPiece;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id_image", nullable = false)
     private Image image;
 
