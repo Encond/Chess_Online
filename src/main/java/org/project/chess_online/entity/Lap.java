@@ -28,6 +28,10 @@ public class Lap {
     @JoinColumn(name = "user_id_winner")
     private User userWinner;
 
+    @OneToOne
+    @JoinColumn(name = "moves_history_id", referencedColumnName = "id_moves_history", nullable = false)
+    private GameHistory gameHistory;
+
     @Column(name = "active")
     private boolean active;
 

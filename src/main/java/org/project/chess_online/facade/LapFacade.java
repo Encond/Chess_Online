@@ -6,15 +6,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LapFacade {
-    public LapDTO lapToLapDTO(Lap lap) {
+    public LapDTO lapToLapDTO(Lap lap, Long currentUserId) {
         LapDTO lapDTO = new LapDTO();
         lapDTO.setId(lap.getIdLap());
 
-        lapDTO.setUserIdFirst(lap.getUserFirst().getIdUser());
-        lapDTO.setUserUsernameFirst(lap.getUserFirst().getUsername());
+        String tempEnemyName = currentUserId.equals(lap.getUserFirst().getIdUser()) ? lap.getUserSecond().getUsername() : lap.getUserFirst().getUsername();
+        lapDTO.setEnemyName(tempEnemyName);
 
-        lapDTO.setUserIdSecond(lap.getUserSecond().getIdUser());
-        lapDTO.setUserUsernameSecond(lap.getUserSecond().getUsername());
+        lapDTO.setChessPiecesColor(currentUserId.equals(lap.getUserFirst().getIdUser()));
 
         lapDTO.setActive(true);
         lapDTO.setChatId(lap.getChat().getIdChat());

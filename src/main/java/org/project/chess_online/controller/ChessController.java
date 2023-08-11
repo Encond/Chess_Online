@@ -2,10 +2,12 @@ package org.project.chess_online.controller;
 
 import org.project.chess_online.dto.LapDTO;
 import org.project.chess_online.entity.Chat;
+import org.project.chess_online.entity.GameHistory;
 import org.project.chess_online.entity.Lap;
 import org.project.chess_online.entity.User;
 import org.project.chess_online.facade.LapFacade;
 import org.project.chess_online.service.ChatService;
+import org.project.chess_online.service.GameHistoryService;
 import org.project.chess_online.service.LapService;
 import org.project.chess_online.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,24 +53,31 @@ public class ChessController {
 
         User userFirst = this.userQueue.get(1);
         User userSecond = this.userQueue.get(2);
-        this.lapService.create(userFirst, userSecond);
 
+        this.lapService.create(userFirst, userSecond);
         Lap createdLap = this.lapService.findByUsers(userFirst, userSecond);
 
         return new ResponseEntity<>(createdLap, HttpStatus.OK);
     }
 
-    @GetMapping("/play/{lapId}")
-    public ResponseEntity<LapDTO> playGame(@PathVariable("lapId") Long lapId) {
-        Lap tempLap = this.lapService.findById(lapId);
+    @GetMapping("/play")
+    public ResponseEntity<LapDTO> playGame(Long userId) {
+        Lap tempLap = this.lapService.findByUser(userId);
         Chat tempChat = this.chatService.createChat(tempLap);
 
         if (tempChat != null) {
             tempLap.setChat(tempChat);
-            LapDTO tempLapDTO = this.lapFacade.lapToLapDTO(tempLap);
+            LapDTO tempLapDTO = this.lapFacade.lapToLapDTO(tempLap, userId);
             return new ResponseEntity<>(tempLapDTO, HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(new LapDTO(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
+
+//    @PostMapping("/play/makeMove")
+//    public ResponseEntity<LapDTO> makeMove(String username) {
+//
+//
+//        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+//    }
 }

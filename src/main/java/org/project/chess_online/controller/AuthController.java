@@ -52,13 +52,13 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Object> registerUser(@Valid @RequestBody SignupRequest signupRequest, BindingResult bindingResult) {
+    public ResponseEntity<Boolean> registerUser(@Valid @RequestBody SignupRequest signupRequest, BindingResult bindingResult) {
         ResponseEntity<Object> errors = validation.mapValidationService(bindingResult);
 
         if (!ObjectUtils.isEmpty(errors))
-            return errors;
+            return ResponseEntity.ok(false);
 
         userService.createUser(signupRequest);
-        return ResponseEntity.ok("User register successfully");
+        return ResponseEntity.ok(true);
     }
 }

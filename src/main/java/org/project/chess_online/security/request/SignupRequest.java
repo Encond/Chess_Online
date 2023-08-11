@@ -10,6 +10,5 @@ public class SignupRequest {
     private String username;
 
     @NotEmpty(message = "Password can`t be empty")
-    @Size(min = 4)
     private String password;
 }

@@ -21,15 +21,11 @@ public class User implements UserDetails {
     @Column(name = "id_user")
     private Long idUser;
 
-    @Column(name = "username", length = 55, nullable = false)
+    @Column(name = "username", length = 255, nullable = false)
     private String username;
 
-    @Column(name = "password", length = 55, nullable = false)
+    @Column(name = "password", length = 255, nullable = false)
     private String password;
-
-    @ManyToOne
-    @JoinColumn(name = "moves_history_id", referencedColumnName = "id_moves_history")
-    private GameHistory gameHistory;
 
     @ElementCollection(targetClass = ERole.class)
     @CollectionTable(name = "user_role",

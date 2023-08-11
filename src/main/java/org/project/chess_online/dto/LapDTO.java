@@ -9,19 +9,10 @@ public class LapDTO {
     private Long id;
 
     @NotEmpty
-    private Long userIdFirst;
-    @NotEmpty
-    private String userUsernameFirst;
+    private String enemyName;
 
     @NotEmpty
-    private Long userIdSecond;
-    @NotEmpty
-    private String userUsernameSecond;
-
-    @NotEmpty
-    private Long userIdWinner;
-    @NotEmpty
-    private String userUsernameWinner;
+    private boolean chessPiecesColor;
 
     @NotEmpty
     private boolean active;

@@ -30,7 +30,6 @@ public class GameHistory {
     @Column(name = "move_count", nullable = false)
     private int moveCount;
 
-    @OneToOne
-    @JoinColumn(name = "lap_id", nullable = false)
+    @OneToOne(mappedBy = "gameHistory")
     private Lap lap;
 }
