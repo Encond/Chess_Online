@@ -1,6 +1,5 @@
 package org.project.chess_online.service;
 
-import org.project.chess_online.entity.GameHistory;
 import org.project.chess_online.entity.Lap;
 import org.project.chess_online.entity.User;
 import org.project.chess_online.repository.LapRepository;

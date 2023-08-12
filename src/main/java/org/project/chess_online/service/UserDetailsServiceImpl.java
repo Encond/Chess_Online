@@ -1,6 +1,5 @@
 package org.project.chess_online.service;
 
-import org.project.chess_online.entity.ERole;
 import org.project.chess_online.entity.User;
 import org.project.chess_online.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,11 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -34,7 +30,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 //                User(user.getUsername(), user.getPassword(), getAuthorities(user.getRoles()));
 
         return build(user);
-
     }
 
     private UserDetails build(User user) {

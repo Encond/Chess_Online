@@ -2,7 +2,7 @@ package org.project.chess_online.controller;
 
 import org.project.chess_online.dto.LapDTO;
 import org.project.chess_online.entity.Chat;
-import org.project.chess_online.entity.GameHistory;
+import org.project.chess_online.entity.ChessPieceMove;
 import org.project.chess_online.entity.Lap;
 import org.project.chess_online.entity.User;
 import org.project.chess_online.facade.LapFacade;
@@ -26,14 +26,17 @@ public class ChessController {
     private final LapFacade lapFacade;
     private final UserService userService;
     private final ChatService chatService;
+    private final GameHistoryService gameHistoryService;
     private List<User> userQueue;
 
     @Autowired
-    public ChessController(LapService lapService, UserService userService, LapFacade lapFacade, ChatService chatService) {
+    public ChessController(LapService lapService, UserService userService, LapFacade lapFacade, ChatService chatService,
+                           GameHistoryService gameHistoryService) {
         this.lapService = lapService;
         this.userService = userService;
         this.lapFacade = lapFacade;
         this.chatService = chatService;
+        this.gameHistoryService = gameHistoryService;
 
         this.userQueue = new ArrayList<User>();
     }
@@ -74,10 +77,19 @@ public class ChessController {
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-//    @PostMapping("/play/makeMove")
-//    public ResponseEntity<LapDTO> makeMove(String username) {
-//
-//
-//        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//    }
+    @PostMapping("/play/makeMove")
+    public ResponseEntity.BodyBuilder makeMove(ChessPieceMove chessPieceMove) {
+        Lap tempLap = this.lapService.findByUser(chessPieceMove.getUser().getIdUser());
+        this.gameHistoryService.add(tempLap.getGameHistory(), chessPieceMove);
+
+        return ResponseEntity.ok();
+    }
+
+    @GetMapping("/play/getMove")
+    public ResponseEntity<Boolean> getMove(Long userId) {
+        Lap tempLap = this.lapService.findByUser(userId);
+        List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
+
+        return new ResponseEntity<>(tempChessPieceMoves.get(tempChessPieceMoves.size() - 1).getUser().getIdUser().equals(userId), HttpStatus.OK);
+    }
 }

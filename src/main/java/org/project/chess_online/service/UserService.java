@@ -29,10 +29,6 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<User> getAll() {
-        return this.userRepository.findAll();
-    }
-
     public User findById(Long id) {
         return this.userRepository.findById(id).get(); //.orElseGet(User::new);
     }
@@ -54,12 +50,12 @@ public class UserService implements UserDetailsService {
         return roles.stream().map(eRole -> new SimpleGrantedAuthority(eRole.name())).toList();
     }
 
-    public User createUser(SignupRequest signupRequest) {
+    public void createUser(SignupRequest signupRequest) {
         User user = new User();
         user.setUsername(signupRequest.getUsername());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.getRoles().add(ERole.ROLE_USER);
 
-        return userRepository.save(user);
+        this.userRepository.save(user);
     }
 }

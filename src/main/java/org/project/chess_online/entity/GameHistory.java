@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -16,19 +18,8 @@ public class GameHistory {
     @Column(name = "id_moves_history")
     private Long idGameHistory;
 
-    @Column(name = "chess_piece_move", length = 15, nullable = false)
-    private String chessPieceMove;
-
-    @OneToOne
-    @JoinColumn(name = "chess_piece_id", nullable = false)
-    private ChessPiece chessPiece;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @Column(name = "move_count", nullable = false)
-    private int moveCount;
+    @OneToMany
+    private List<ChessPieceMove> chessPieceMoves;
 
     @OneToOne(mappedBy = "gameHistory")
     private Lap lap;
