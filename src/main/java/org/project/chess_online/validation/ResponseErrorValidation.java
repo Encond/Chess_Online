@@ -15,14 +15,17 @@ public class ResponseErrorValidation {
     public ResponseEntity<Object> mapValidationService(BindingResult result) {
         if (result.hasErrors()) {
             HashMap<String, String> errorMap = new HashMap<>();
+
             if (!CollectionUtils.isEmpty(result.getAllErrors())) {
                 for (ObjectError error : result.getAllErrors()) {
                     errorMap.put(error.getCode(), error.getDefaultMessage());
                 }
             }
+
             for (FieldError fieldError : result.getFieldErrors()) {
                 errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
             }
+            
             return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
         }
         return null;

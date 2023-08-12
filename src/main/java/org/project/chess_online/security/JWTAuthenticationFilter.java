@@ -1,7 +1,7 @@
 package org.project.chess_online.security;
 
 import org.project.chess_online.entity.User;
-import org.project.chess_online.service.UserDetailsServiceImpl;
+import org.project.chess_online.service.UserDetailsService;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,7 +19,7 @@ import java.util.Collections;
 
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private JWTTokenProvider jwtTokenProvider;
-    private UserDetailsServiceImpl userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Autowired
     public void setJwtTokenProvider(JWTTokenProvider jwtTokenProvider) {
@@ -27,7 +27,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Autowired
-    public void setUserDetailsService(UserDetailsServiceImpl userDetailsService) {
+    public void setUserDetailsService(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -42,11 +42,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
                 User userById = userDetailsService.getUserById(userId);
 
-                UsernamePasswordAuthenticationToken authenticationToken
-                        = new UsernamePasswordAuthenticationToken(userById, null, Collections.emptyList());
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(userById, null, Collections.emptyList());
 
-                authenticationToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } catch (Exception ignored) {

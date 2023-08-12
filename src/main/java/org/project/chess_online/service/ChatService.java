@@ -19,7 +19,7 @@ public class ChatService {
     }
 
     public Chat findById(Long id) {
-        return this.chatRepository.findById(id).get(); // orElse(Chat::new);
+        return this.chatRepository.findById(id).orElseGet(Chat::new);
     }
 
     public Chat createChat(Lap lap) {
@@ -29,7 +29,7 @@ public class ChatService {
     }
 
     public void sendMessage(Chat chat, Message message) {
-        if (message != null && !message.getText().equals("")) {
+        if (message != null && !message.getText().isEmpty()) {
             List<Message> tempMessages = chat.getMessages();
             tempMessages.add(message);
             chat.setMessages(tempMessages);

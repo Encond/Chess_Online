@@ -1,6 +1,6 @@
 package org.project.chess_online.security;
 
-import org.project.chess_online.service.UserDetailsServiceImpl;
+import org.project.chess_online.service.UserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -24,9 +24,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class WebSecurityConfig {
     private final JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsService userDetailsService;
 
-    public WebSecurityConfig(JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint, UserDetailsServiceImpl userDetailsService) {
+    public WebSecurityConfig(JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint, UserDetailsService userDetailsService) {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.userDetailsService = userDetailsService;
     }
@@ -44,13 +44,11 @@ public class WebSecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers("/").permitAll()
-                                .requestMatchers("image/**").permitAll()
                                 .requestMatchers("/api/auth/*").permitAll()
                                 .requestMatchers("/game/**").authenticated()
                                 .requestMatchers("/chat/**").authenticated()
+                                .requestMatchers("/home/**").permitAll()
                                 .anyRequest().authenticated()
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/profile/**").hasRole("USER")
                 ).addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.loginPage("/login"));
 

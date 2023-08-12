@@ -29,4 +29,8 @@ public class GameHistoryService {
             gameHistory.setChessPieceMoves(tempChessPieceMoves);
         }
     }
+
+    public boolean checkLastMove(List<ChessPieceMove> chessPieceMoves, Long userId) {
+        return chessPieceMoves.get(chessPieceMoves.size() - 1).getUser().getIdUser().equals(userId);
+    }
 }

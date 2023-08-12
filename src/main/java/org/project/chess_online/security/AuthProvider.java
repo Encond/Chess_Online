@@ -23,22 +23,19 @@ public class AuthProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        // Authentication is a User from outside
-
         String username = authentication.getName();
-        User user = userService.findUserByUsername(username); // User from database
+        User user = userService.findUserByUsername(username);
+
         if (user == null)
             throw new UsernameNotFoundException("User not found");
 
-        String password = user.getPassword(); // Password from database
         String userPassword = authentication.getCredentials().toString();
+        String password = user.getPassword();
 
         if (!userPassword.equals(password))
             throw new BadCredentialsException("Bad Credentials");
 
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
-
-        // AuthenticationToken is a registered User
         return new UsernamePasswordAuthenticationToken(user, null, authorities);
     }
 

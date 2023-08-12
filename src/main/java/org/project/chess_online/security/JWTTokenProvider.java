@@ -30,20 +30,19 @@ public class JWTTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser()
-                    .setSigningKey(SecurityConstants.SECRET)
-                    .parseClaimsJwt(token);
-            return true;
+            Jwts.parser().setSigningKey(SecurityConstants.SECRET).parseClaimsJwt(token);
 
+            return true;
         } catch (Exception e) {
             return false;
         }
     }
 
     public Long getUserIdFromToken(String token) {
+        String jwt = token.replace("Bearer", "");
         Claims claims = Jwts.parser().setSigningKey(SecurityConstants.SECRET)
-                .parseClaimsJwt(token).getBody();
+                .parseClaimsJws(jwt).getBody();
 
-        return (Long) claims.get("id");
+        return Long.parseLong((String) claims.get("id"));
     }
 }

@@ -30,7 +30,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User findById(Long id) {
-        return this.userRepository.findById(id).get(); //.orElseGet(User::new);
+        return this.userRepository.findById(id).orElseGet(User::new);
     }
 
     public User findUserByUsername(String username) {

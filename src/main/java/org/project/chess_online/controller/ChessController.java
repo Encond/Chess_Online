@@ -6,6 +6,7 @@ import org.project.chess_online.entity.ChessPieceMove;
 import org.project.chess_online.entity.Lap;
 import org.project.chess_online.entity.User;
 import org.project.chess_online.facade.LapFacade;
+import org.project.chess_online.security.JWTTokenProvider;
 import org.project.chess_online.service.ChatService;
 import org.project.chess_online.service.GameHistoryService;
 import org.project.chess_online.service.LapService;
@@ -27,16 +28,18 @@ public class ChessController {
     private final UserService userService;
     private final ChatService chatService;
     private final GameHistoryService gameHistoryService;
+    private final JWTTokenProvider jwtTokenProvider;
     private List<User> userQueue;
 
     @Autowired
     public ChessController(LapService lapService, UserService userService, LapFacade lapFacade, ChatService chatService,
-                           GameHistoryService gameHistoryService) {
+                           GameHistoryService gameHistoryService, JWTTokenProvider jwtTokenProvider) {
         this.lapService = lapService;
         this.userService = userService;
         this.lapFacade = lapFacade;
         this.chatService = chatService;
         this.gameHistoryService = gameHistoryService;
+        this.jwtTokenProvider = jwtTokenProvider;
 
         this.userQueue = new ArrayList<User>();
     }
@@ -78,15 +81,22 @@ public class ChessController {
     }
 
     @PostMapping("/play/makeMove")
-    public ResponseEntity.BodyBuilder makeMove(ChessPieceMove chessPieceMove) {
+    public ResponseEntity.BodyBuilder makeMove(ChessPieceMove chessPieceMove, String token) {
+        Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+
         Lap tempLap = this.lapService.findByUser(chessPieceMove.getUser().getIdUser());
-        this.gameHistoryService.add(tempLap.getGameHistory(), chessPieceMove);
+        List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
+
+        if (this.gameHistoryService.checkLastMove(tempChessPieceMoves, userId))
+            this.gameHistoryService.add(tempLap.getGameHistory(), chessPieceMove);
 
         return ResponseEntity.ok();
     }
 
     @GetMapping("/play/getMove")
-    public ResponseEntity<Boolean> getMove(Long userId) {
+    public ResponseEntity<Boolean> getMove(String token) {
+        Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+
         Lap tempLap = this.lapService.findByUser(userId);
         List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 

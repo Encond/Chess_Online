@@ -18,11 +18,11 @@ public class LapService {
     }
 
     public Lap findByUsers(User userFirst, User userSecond) {
-        return this.lapRepository.findByUsers(userFirst, userSecond); // orElseGet(Lap::new);
+        return this.lapRepository.findByUsers(userFirst, userSecond);
     }
 
     public Lap findByUser(Long userId) {
-        return this.lapRepository.findByUser(userId); // orElseGet(Lap::new);
+        return this.lapRepository.findByUser(userId);
     }
 
     public void create(User userFirst, User userSecond) {
