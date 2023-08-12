@@ -45,7 +45,9 @@ public class ChessController {
     }
 
     @GetMapping("/queue")
-    public ResponseEntity.BodyBuilder enterGame(Long userId, boolean status) {
+    public ResponseEntity.BodyBuilder enterGame(String token, boolean status) {
+        Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+
         User tempUser = this.userService.findById(userId);
         boolean tempResult = tempUser != null && !status ? this.userQueue.remove(tempUser) : this.userQueue.add(tempUser);
 
