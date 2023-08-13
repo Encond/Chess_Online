@@ -69,8 +69,10 @@ public class ChessController {
     }
 
     @GetMapping("/play")
-    public ResponseEntity<LapDTO> playGame(Long userId) {
-        Lap tempLap = this.lapService.findByUser(userId);
+    public ResponseEntity<LapDTO> playGame(String token) {
+        Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+
+        Lap tempLap = this.lapService.findByUserId(userId);
         Chat tempChat = this.chatService.createChat(tempLap);
 
         if (tempChat != null) {
@@ -86,7 +88,7 @@ public class ChessController {
     public ResponseEntity.BodyBuilder makeMove(ChessPieceMove chessPieceMove, String token) {
         Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-        Lap tempLap = this.lapService.findByUser(chessPieceMove.getUser().getIdUser());
+        Lap tempLap = this.lapService.findByUserId(chessPieceMove.getUser().getIdUser());
         List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 
         if (this.gameHistoryService.checkLastMove(tempChessPieceMoves, userId))
@@ -99,7 +101,7 @@ public class ChessController {
     public ResponseEntity<Boolean> getMove(String token) {
         Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-        Lap tempLap = this.lapService.findByUser(userId);
+        Lap tempLap = this.lapService.findByUserId(userId);
         List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 
         return new ResponseEntity<>(tempChessPieceMoves.get(tempChessPieceMoves.size() - 1).getUser().getIdUser().equals(userId), HttpStatus.OK);

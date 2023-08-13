@@ -29,7 +29,7 @@ public class Lap {
     private User userWinner;
 
     @OneToOne
-    @JoinColumn(name = "moves_history_id", referencedColumnName = "id_moves_history", nullable = false)
+    @JoinColumn(name = "moves_history_id", referencedColumnName = "id_moves_history")
     private GameHistory gameHistory;
 
     @Column(name = "active")

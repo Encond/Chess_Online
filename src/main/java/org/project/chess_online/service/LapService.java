@@ -21,8 +21,8 @@ public class LapService {
         return this.lapRepository.findByUsers(userFirst, userSecond);
     }
 
-    public Lap findByUser(Long userId) {
-        return this.lapRepository.findByUser(userId);
+    public Lap findByUserId(Long userId) {
+        return this.lapRepository.findByUserId(userId);
     }
 
     public void create(User userFirst, User userSecond) {

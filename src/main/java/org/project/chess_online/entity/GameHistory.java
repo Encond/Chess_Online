@@ -18,7 +18,8 @@ public class GameHistory {
     @Column(name = "id_moves_history")
     private Long idGameHistory;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_chess_piece_move")
     private List<ChessPieceMove> chessPieceMoves;
 
     @OneToOne(mappedBy = "gameHistory")
