@@ -2,6 +2,7 @@ package org.project.chess_online.controller;
 
 import org.project.chess_online.entity.Chat;
 import org.project.chess_online.entity.Message;
+import org.project.chess_online.security.JWTTokenProvider;
 import org.project.chess_online.service.ChatService;
 import org.project.chess_online.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,32 +17,45 @@ import java.util.List;
 public class ChatController {
     private final ChatService chatService;
     private final MessageService messageService;
+    private final JWTTokenProvider jwtTokenProvider;
 
     @Autowired
-    public ChatController(ChatService chatService, MessageService messageService) {
+    public ChatController(ChatService chatService, MessageService messageService, JWTTokenProvider jwtTokenProvider) {
         this.chatService = chatService;
         this.messageService = messageService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    @GetMapping("/{chatId}/messages")
-    public ResponseEntity<List<Message>> getMessages(@PathVariable("chatId") Long chatId) {
-        Chat tempChat = this.chatService.findById(chatId);
-        List<Message> messages = tempChat.getMessages();
+    @GetMapping("/messages/get")
+    public ResponseEntity<List<Message>> getMessages(@RequestHeader String token) {
+        if (token != null) {
+            Long chatId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-        return new ResponseEntity<>(messages, HttpStatus.OK);
-    }
+            Chat tempChat = this.chatService.findById(chatId);
+            List<Message> messages = tempChat.getMessages();
 
-    @PostMapping("/{chatId}/message/send")
-    public ResponseEntity.BodyBuilder sendMessage(@PathVariable("chatId") Long chatId, String text) {
-        Chat tempChat = this.chatService.findById(chatId);
-
-        if (tempChat != null) {
-            Message message = this.messageService.createMessage(tempChat, text);
-
-            if (message != null)
-                this.chatService.sendMessage(tempChat, message);
+            return new ResponseEntity<>(messages, HttpStatus.OK);
         }
 
-        return ResponseEntity.ok();
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/messages/send")
+    public ResponseEntity.BodyBuilder sendMessage(@RequestHeader String token, String text) {
+        if (token != null) {
+            Long chatId = this.jwtTokenProvider.getUserIdFromToken(token);
+            Chat tempChat = this.chatService.findById(chatId);
+
+            if (tempChat != null) {
+                Message message = this.messageService.createMessage(tempChat, text);
+
+                if (message != null)
+                    this.chatService.sendMessage(tempChat, message);
+            }
+
+            return ResponseEntity.ok();
+        }
+
+        return ResponseEntity.badRequest();
     }
 }
