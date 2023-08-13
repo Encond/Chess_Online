@@ -46,12 +46,15 @@ public class ChessController {
 
     @PostMapping("/queue")
     public ResponseEntity<Boolean> enterGame(@RequestHeader String token, boolean status) {
-        Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
-        User user = this.userService.findById(userId);
+        if (token != null) {
+            Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+            User user = this.userService.findById(userId);
 
-        boolean tempResult = user != null && !status ? this.userQueue.remove(user) : this.userQueue.add(user);
+            if (user != null)
+                return ResponseEntity.ok(!status ? this.userQueue.remove(user) : this.userQueue.add(user));
+        }
 
-        return ResponseEntity.ok(tempResult);
+        return ResponseEntity.ofNullable(false);
     }
 
     @PostMapping("/create")
@@ -70,15 +73,17 @@ public class ChessController {
 
     @GetMapping("/play")
     public ResponseEntity<LapDTO> playGame(@RequestHeader String token) {
-        Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+        if (token != null) {
+            Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-        Lap tempLap = this.lapService.findByUserId(userId);
-        Chat tempChat = this.chatService.createChat(tempLap);
+            Lap tempLap = this.lapService.findByUserId(userId);
+            Chat tempChat = this.chatService.createChat(tempLap);
 
-        if (tempChat != null) {
-            tempLap.setChat(tempChat);
-            LapDTO tempLapDTO = this.lapFacade.lapToLapDTO(tempLap, userId);
-            return new ResponseEntity<>(tempLapDTO, HttpStatus.OK);
+            if (tempChat != null) {
+                tempLap.setChat(tempChat);
+                LapDTO tempLapDTO = this.lapFacade.lapToLapDTO(tempLap, userId);
+                return new ResponseEntity<>(tempLapDTO, HttpStatus.OK);
+            }
         }
 
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -86,24 +91,32 @@ public class ChessController {
 
     @PostMapping("/play/makeMove")
     public ResponseEntity.BodyBuilder makeMove(@RequestHeader String token, ChessPieceMove chessPieceMove) {
-        Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+        if (token != null) {
+            Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-        Lap tempLap = this.lapService.findByUserId(chessPieceMove.getUser().getIdUser());
-        List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
+            Lap tempLap = this.lapService.findByUserId(chessPieceMove.getUser().getIdUser());
+            List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 
-        if (this.gameHistoryService.checkLastMove(tempChessPieceMoves, userId))
-            this.gameHistoryService.add(tempLap.getGameHistory(), chessPieceMove);
+            if (this.gameHistoryService.checkLastMove(tempChessPieceMoves, userId))
+                this.gameHistoryService.add(tempLap.getGameHistory(), chessPieceMove);
 
-        return ResponseEntity.ok();
+            return ResponseEntity.ok();
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/play/getMove")
     public ResponseEntity<Boolean> getMove(@RequestHeader String token) {
-        Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+        if (token != null) {
+            Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-        Lap tempLap = this.lapService.findByUserId(userId);
-        List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
+            Lap tempLap = this.lapService.findByUserId(userId);
+            List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 
-        return new ResponseEntity<>(tempChessPieceMoves.get(tempChessPieceMoves.size() - 1).getUser().getIdUser().equals(userId), HttpStatus.OK);
+            return new ResponseEntity<>(tempChessPieceMoves.get(tempChessPieceMoves.size() - 1).getUser().getIdUser().equals(userId), HttpStatus.OK);
+        }
+
+        return ResponseEntity.ofNullable(false);
     }
 }
