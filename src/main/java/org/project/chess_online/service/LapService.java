@@ -1,5 +1,6 @@
 package org.project.chess_online.service;
 
+import org.project.chess_online.entity.Chat;
 import org.project.chess_online.entity.Lap;
 import org.project.chess_online.entity.User;
 import org.project.chess_online.repository.LapRepository;
@@ -17,8 +18,11 @@ public class LapService {
         this.gameHistoryService = gameHistoryService;
     }
 
-    public Lap findByUsers(User userFirst, User userSecond) {
-        return this.lapRepository.findByUsers(userFirst, userSecond);
+    public Lap findByUsersId(Long userFirstId, Long userSecondId) {
+        if (this.lapRepository.findByUserId(userFirstId) == null && this.lapRepository.findByUserId(userFirstId) == null)
+            return this.lapRepository.findByUsersId(userFirstId, userSecondId);
+
+        return null;
     }
 
     public Lap findByUserId(Long userId) {

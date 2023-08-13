@@ -23,9 +23,10 @@ public class ChatService {
     }
 
     public Chat createChat(Lap lap) {
-        Chat chat = new Chat(lap);
+        Chat newChat = new Chat();
+        newChat.setLap(lap);
 
-        return this.chatRepository.save(chat);
+        return this.chatRepository.save(newChat);
     }
 
     public void sendMessage(Chat chat, Message message) {

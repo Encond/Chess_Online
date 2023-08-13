@@ -5,12 +5,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Table(name = "moves_history")
 public class GameHistory {
     @Id
@@ -24,4 +24,8 @@ public class GameHistory {
 
     @OneToOne(mappedBy = "gameHistory")
     private Lap lap;
+
+    public GameHistory() {
+        this.chessPieceMoves = new ArrayList<ChessPieceMove>();
+    }
 }

@@ -23,7 +23,7 @@ public class JWTTokenProvider {
                 .setSubject(Long.toString(user.getIdUser()))
                 .addClaims(claimsMap)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 600_000))
+                .setExpiration(new Date(System.currentTimeMillis() + 600_000_000))
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.SECRET)
                 .compact();
     }

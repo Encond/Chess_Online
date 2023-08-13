@@ -44,14 +44,14 @@ public class ChessController {
         this.userQueue = new ArrayList<User>();
     }
 
-    @GetMapping("/queue")
-    public ResponseEntity.BodyBuilder enterGame(String token, boolean status) {
+    @PostMapping("/queue")
+    public ResponseEntity<Boolean> enterGame(@RequestHeader String token, boolean status) {
         Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
         User tempUser = this.userService.findById(userId);
         boolean tempResult = tempUser != null && !status ? this.userQueue.remove(tempUser) : this.userQueue.add(tempUser);
 
-        return tempResult ? ResponseEntity.ok() : ResponseEntity.internalServerError();
+        return ResponseEntity.ok(tempResult);
     }
 
     @PostMapping("/create")
@@ -59,17 +59,17 @@ public class ChessController {
         if (this.userQueue.size() < 2)
             return new ResponseEntity<>(null, HttpStatus.OK);
 
-        User userFirst = this.userQueue.get(1);
-        User userSecond = this.userQueue.get(2);
+        User userFirst = this.userQueue.get(0);
+        User userSecond = this.userQueue.get(1);
 
         this.lapService.create(userFirst, userSecond);
-        Lap createdLap = this.lapService.findByUsers(userFirst, userSecond);
+        Lap createdLap = this.lapService.findByUsersId(userFirst.getIdUser(), userSecond.getIdUser());
 
         return new ResponseEntity<>(createdLap, HttpStatus.OK);
     }
 
     @GetMapping("/play")
-    public ResponseEntity<LapDTO> playGame(String token) {
+    public ResponseEntity<LapDTO> playGame(@RequestHeader String token) {
         Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
         Lap tempLap = this.lapService.findByUserId(userId);
@@ -85,7 +85,7 @@ public class ChessController {
     }
 
     @PostMapping("/play/makeMove")
-    public ResponseEntity.BodyBuilder makeMove(ChessPieceMove chessPieceMove, String token) {
+    public ResponseEntity.BodyBuilder makeMove(@RequestHeader String token, ChessPieceMove chessPieceMove) {
         Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
         Lap tempLap = this.lapService.findByUserId(chessPieceMove.getUser().getIdUser());
@@ -98,7 +98,7 @@ public class ChessController {
     }
 
     @GetMapping("/play/getMove")
-    public ResponseEntity<Boolean> getMove(String token) {
+    public ResponseEntity<Boolean> getMove(@RequestHeader String token) {
         Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
         Lap tempLap = this.lapService.findByUserId(userId);

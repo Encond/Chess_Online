@@ -27,9 +27,4 @@ public class Chat {
     public Chat() {
         this.messages = new ArrayList<Message>();
     }
-
-    public Chat(Lap lap) {
-        this.lap = lap;
-        this.messages = new ArrayList<Message>();
-    }
 }
