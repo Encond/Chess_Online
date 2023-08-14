@@ -29,7 +29,7 @@ public class ChessController {
     private final ChatService chatService;
     private final GameHistoryService gameHistoryService;
     private final JWTTokenProvider jwtTokenProvider;
-    private List<User> userQueue;
+    private final List<User> userQueue;
 
     @Autowired
     public ChessController(LapService lapService, UserService userService, LapFacade lapFacade, ChatService chatService,
@@ -41,7 +41,7 @@ public class ChessController {
         this.gameHistoryService = gameHistoryService;
         this.jwtTokenProvider = jwtTokenProvider;
 
-        this.userQueue = new ArrayList<User>();
+        this.userQueue = new ArrayList<>();
     }
 
     @PostMapping("/queue")
@@ -51,13 +51,31 @@ public class ChessController {
             User user = this.userService.findById(userId);
 
             if (user != null) {
-                if (this.userQueue.size() >= 1 && !this.userQueue.contains(user)) {
+                if (!this.userQueue.isEmpty() && !this.userQueue.contains(user)) {
                     User userEnemy = this.userQueue.get(0);
 
                     this.lapService.create(userEnemy, user);
                     this.userQueue.remove(userEnemy);
                 } else if (!this.userQueue.contains(user))
                     this.userQueue.add(user);
+
+                return ResponseEntity.ok(true);
+            }
+        }
+
+        return ResponseEntity.ok(false);
+    }
+
+    @PostMapping("/cansel-game")
+    public ResponseEntity<Boolean> cancelGame(@RequestHeader String token) {
+        if (token != null) {
+            Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+            User user = this.userService.findById(userId);
+
+            if (user != null) {
+                if (this.userQueue.contains(user)) {
+                    this.userQueue.remove(user);
+                }
 
                 return ResponseEntity.ok(true);
             }
