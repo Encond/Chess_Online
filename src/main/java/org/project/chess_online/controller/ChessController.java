@@ -66,7 +66,7 @@ public class ChessController {
         return ResponseEntity.ok(false);
     }
 
-    @PostMapping("/cansel-game")
+    @PostMapping("/cansel")
     public ResponseEntity<Boolean> cancelGame(@RequestHeader String token) {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
