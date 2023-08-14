@@ -69,6 +69,9 @@ public class ChessController {
         this.lapService.create(userFirst, userSecond);
         Lap createdLap = this.lapService.findByUsersId(userFirst.getIdUser(), userSecond.getIdUser());
 
+        this.userQueue.remove(userFirst);
+        this.userQueue.remove(userSecond);
+
         return new ResponseEntity<>(createdLap.getIdLap(), HttpStatus.OK);
     }
 
