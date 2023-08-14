@@ -96,12 +96,13 @@ public class ChessController {
     }
 
     @GetMapping("/lap")
-    public ResponseEntity<Lap> getGame(@RequestHeader String token, Long lapId) {
+    public ResponseEntity<LapDTO> getGame(@RequestHeader String token, Long lapId) {
         if (token != null) {
             if (this.jwtTokenProvider.validateToken(token)) {
-                Lap tempLap = this.lapService.findById(lapId);
+                Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+                LapDTO lapDTO = this.lapFacade.lapToLapDTO(this.lapService.findById(lapId), userId);
 
-                return new ResponseEntity<>(tempLap, HttpStatus.OK);
+                return new ResponseEntity<>(lapDTO, HttpStatus.OK);
             }
         }
 
