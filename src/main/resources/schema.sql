@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS chess_online;
 CREATE DATABASE IF NOT EXISTS chess_online;
 USE chess_online;
 
-create table chess_online.user
+create table if not exists chess_online.user
 (
     id_user  int auto_increment
         primary key,
@@ -10,7 +10,7 @@ create table chess_online.user
     password varchar(255) not null
 );
 
-create table chess_online.chess_piece_move
+create table if not exists chess_online.chess_piece_move
 (
     id_chess_piece_move int auto_increment
         primary key,
@@ -23,16 +23,16 @@ create table chess_online.chess_piece_move
         foreign key (user_id) references chess_online.user (id_user)
 );
 
-create table chess_online.moves_history
+create table if not exists chess_online.moves_history
 (
     id_moves_history    int auto_increment
         primary key,
-    chess_piece_move_id int not null,
+    chess_piece_move_id int null,
     constraint moves_history_chess_piece_move_id_chess_piece_move_fk
         foreign key (chess_piece_move_id) references chess_online.chess_piece_move (id_chess_piece_move)
 );
 
-create table chess_online.lap
+create table if not exists chess_online.lap
 (
     id_lap           int auto_increment
         primary key,
@@ -51,7 +51,7 @@ create table chess_online.lap
         foreign key (user_id_winner) references chess_online.user (id_user)
 );
 
-create table chess_online.chat
+create table if not exists chess_online.chat
 (
     id_chat int auto_increment
         primary key,
@@ -60,7 +60,7 @@ create table chess_online.chat
         foreign key (lap_id) references chess_online.lap (id_lap)
 );
 
-create table chess_online.message
+create table if not exists chess_online.message
 (
     id_message int auto_increment
         primary key,
@@ -71,7 +71,7 @@ create table chess_online.message
         foreign key (chat_id) references chess_online.chat (id_chat)
 );
 
-create table chess_online.user_role
+create table if not exists chess_online.user_role
 (
     user_id int not null,
     roles   int null,

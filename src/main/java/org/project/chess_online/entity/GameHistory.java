@@ -1,5 +1,6 @@
 package org.project.chess_online.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class GameHistory {
     private List<ChessPieceMove> chessPieceMoves;
 
     @OneToOne(mappedBy = "gameHistory")
+    @JsonIgnore
     private Lap lap;
 
     public GameHistory() {
