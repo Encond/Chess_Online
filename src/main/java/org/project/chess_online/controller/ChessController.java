@@ -51,7 +51,8 @@ public class ChessController {
             User user = this.userService.findById(userId);
 
             if (user != null)
-                return ResponseEntity.ok(!status ? this.userQueue.remove(user) : this.userQueue.add(user));
+                return ResponseEntity.ok(status ? (!this.userQueue.contains(user) ? this.userQueue.add(user) : false) :
+                        (this.userQueue.contains(user) ? this.userQueue.remove(user) : false));
         }
 
         return ResponseEntity.ofNullable(false);
