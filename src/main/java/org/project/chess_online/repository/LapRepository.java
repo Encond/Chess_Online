@@ -13,4 +13,7 @@ public interface LapRepository extends JpaRepository<Lap, Long> {
 
     @Query(value = "from Lap where userFirst.idUser = ?1 or userSecond.idUser = ?1")
     Lap findByUserId(Long userId);
+
+    @Query(value = "from Lap l where l.idLap = ?1")
+    Lap findLapById(Long lapId);
 }

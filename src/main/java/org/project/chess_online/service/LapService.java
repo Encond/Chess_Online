@@ -18,6 +18,13 @@ public class LapService {
         this.gameHistoryService = gameHistoryService;
     }
 
+    public Lap findById(Long lapId) {
+        if(lapId > 0)
+            return this.lapRepository.findLapById(lapId);
+
+        return null;
+    }
+
     public Lap findByUsersId(Long userFirstId, Long userSecondId) {
         if (this.lapRepository.findByUserId(userFirstId) == null && this.lapRepository.findByUserId(userFirstId) == null)
             return this.lapRepository.findByUsersId(userFirstId, userSecondId);

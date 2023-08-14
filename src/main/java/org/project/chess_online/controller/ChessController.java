@@ -59,7 +59,7 @@ public class ChessController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Lap> createGame() {
+    public ResponseEntity<Long> createGame() {
         if (this.userQueue.size() < 2)
             return new ResponseEntity<>(null, HttpStatus.OK);
 
@@ -69,7 +69,19 @@ public class ChessController {
         this.lapService.create(userFirst, userSecond);
         Lap createdLap = this.lapService.findByUsersId(userFirst.getIdUser(), userSecond.getIdUser());
 
-        return new ResponseEntity<>(createdLap, HttpStatus.OK);
+        return new ResponseEntity<>(createdLap.getIdLap(), HttpStatus.OK);
+    }
+
+    @GetMapping("/get/lap")
+    public ResponseEntity<Lap> getGame(@RequestHeader String token, Long lapId) {
+        if (token != null) {
+            if(this.jwtTokenProvider.validateToken(token)) {
+                Lap tempLap = this.lapService.findById(lapId);
+                return new ResponseEntity<>(tempLap, HttpStatus.OK);
+            }
+        }
+
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/play")
