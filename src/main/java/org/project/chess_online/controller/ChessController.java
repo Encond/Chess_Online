@@ -45,41 +45,44 @@ public class ChessController {
     }
 
     @PostMapping("/queue")
-    public ResponseEntity<Boolean> enterGame(@RequestHeader String token, boolean status) {
+    public ResponseEntity<Boolean> enterGame(@RequestHeader String token) {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
             User user = this.userService.findById(userId);
 
-            if (user != null)
-                return ResponseEntity.ok(status ? (!this.userQueue.contains(user) ? this.userQueue.add(user) : false) :
-                        (this.userQueue.contains(user) ? this.userQueue.remove(user) : false));
+            if (user != null) {
+                if (this.userQueue.size() >= 1 && !this.userQueue.contains(user)) {
+                    User userEnemy = this.userQueue.get(0);
+
+                    this.lapService.create(userEnemy, user);
+                    this.userQueue.remove(userEnemy);
+                } else if (!this.userQueue.contains(user))
+                    this.userQueue.add(user);
+
+                return ResponseEntity.ok(true);
+            }
         }
 
-        return ResponseEntity.ofNullable(false);
+        return ResponseEntity.ok(false);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Long> createGame() {
-        if (this.userQueue.size() < 2)
-            return new ResponseEntity<>(null, HttpStatus.OK);
+    @PostMapping("/check")
+    public ResponseEntity<Boolean> checkLap(@RequestHeader String token) {
+        if (token != null) {
+            Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-        User userFirst = this.userQueue.get(0);
-        User userSecond = this.userQueue.get(1);
+            return ResponseEntity.ok(this.lapService.findByUserId(userId) != null);
+        }
 
-        this.lapService.create(userFirst, userSecond);
-        Lap createdLap = this.lapService.findByUsersId(userFirst.getIdUser(), userSecond.getIdUser());
-
-        this.userQueue.remove(userFirst);
-        this.userQueue.remove(userSecond);
-
-        return new ResponseEntity<>(createdLap.getIdLap(), HttpStatus.OK);
+        return ResponseEntity.ok(false);
     }
 
-    @GetMapping("/get/lap")
+    @GetMapping("/lap")
     public ResponseEntity<Lap> getGame(@RequestHeader String token, Long lapId) {
         if (token != null) {
-            if(this.jwtTokenProvider.validateToken(token)) {
+            if (this.jwtTokenProvider.validateToken(token)) {
                 Lap tempLap = this.lapService.findById(lapId);
+
                 return new ResponseEntity<>(tempLap, HttpStatus.OK);
             }
         }
