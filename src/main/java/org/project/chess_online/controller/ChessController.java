@@ -54,10 +54,12 @@ public class ChessController {
                 if (!this.userQueue.isEmpty() && !this.userQueue.contains(user)) {
                     User userEnemy = this.userQueue.get(0);
 
-                    this.lapService.create(userEnemy, user);
-
-                    Lap createdLap = this.lapService.findByUserId(userId);
-                    this.chatService.createChat(createdLap);
+                    if(this.lapService.findByUserId(userEnemy.getIdUser()) == null ||
+                            this.lapService.findByUserId(user.getIdUser()) == null) {
+                        this.lapService.create(userEnemy, user);
+                        Lap createdLap = this.lapService.findByUserId(userId);
+                        this.chatService.createChat(createdLap);
+                    }
 
                     this.userQueue.remove(userEnemy);
                 } else if (!this.userQueue.contains(user))
