@@ -83,9 +83,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean equals(Object obj) {
-        if(this == obj)
-            return true;
-
         if(obj == null || obj.getClass()!= this.getClass())
             return false;
 

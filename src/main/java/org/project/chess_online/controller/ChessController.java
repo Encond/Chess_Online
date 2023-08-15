@@ -55,6 +55,10 @@ public class ChessController {
                     User userEnemy = this.userQueue.get(0);
 
                     this.lapService.create(userEnemy, user);
+
+                    Lap createdLap = this.lapService.findByUserId(userId);
+                    this.chatService.createChat(createdLap);
+
                     this.userQueue.remove(userEnemy);
                 } else if (!this.userQueue.contains(user))
                     this.userQueue.add(user);
@@ -66,16 +70,15 @@ public class ChessController {
         return ResponseEntity.ok(false);
     }
 
-    @PostMapping("/cansel")
+    @PostMapping("/cancel")
     public ResponseEntity<Boolean> cancelGame(@RequestHeader String token) {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
             User user = this.userService.findById(userId);
 
             if (user != null) {
-                if (this.userQueue.contains(user)) {
+                if (this.userQueue.contains(user))
                     this.userQueue.remove(user);
-                }
 
                 return ResponseEntity.ok(true);
             }

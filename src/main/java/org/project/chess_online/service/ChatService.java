@@ -22,6 +22,10 @@ public class ChatService {
         return this.chatRepository.findById(id).orElseGet(Chat::new);
     }
 
+    public Chat findByLapId(Long lapId) {
+        return this.chatRepository.findByLapId(lapId);
+    }
+
     public Chat createChat(Lap lap) {
         Chat newChat = new Chat();
         newChat.setLap(lap);
