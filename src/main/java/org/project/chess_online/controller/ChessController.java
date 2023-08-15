@@ -54,13 +54,12 @@ public class ChessController {
                 if (!this.userQueue.isEmpty() && !this.userQueue.contains(user)) {
                     User userEnemy = this.userQueue.get(0);
 
-                    if (this.lapService.findByUserId(userEnemy.getIdUser()) != null){
-                        if(!this.lapService.findByUserId(userEnemy.getIdUser()).isActive()) {
-                            Lap createdLap = this.lapService.create(userEnemy, user);
+                    if (this.lapService.findByUserId(userEnemy.getIdUser()) == null) {
+                        Lap createdLap = this.lapService.create(userEnemy, user);
 
-                            Chat createdChat = this.chatService.createChat(createdLap);
-                            createdLap.setChat(createdChat);
-                        }
+                        Chat createdChat = this.chatService.createChat(createdLap);
+                        createdLap.setChat(createdChat);
+
                     }
 
                     this.userQueue.remove(userEnemy);
@@ -103,11 +102,11 @@ public class ChessController {
     }
 
     @GetMapping("/lap")
-    public ResponseEntity<LapDTO> getGame(@RequestHeader String token, Long lapId) {
+    public ResponseEntity<LapDTO> getGame(@RequestHeader String token) {
         if (token != null) {
             if (this.jwtTokenProvider.validateToken(token)) {
                 Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
-                LapDTO lapDTO = this.lapFacade.lapToLapDTO(this.lapService.findById(lapId), userId);
+                LapDTO lapDTO = this.lapFacade.lapToLapDTO(this.lapService.findByUserId(userId), userId);
 
                 return new ResponseEntity<>(lapDTO, HttpStatus.OK);
             }
