@@ -54,11 +54,13 @@ public class ChessController {
                 if (!this.userQueue.isEmpty() && !this.userQueue.contains(user)) {
                     User userEnemy = this.userQueue.get(0);
 
-                    if (this.lapService.findByUserId(userEnemy.getIdUser()) == null) {
-                        Lap createdLap = this.lapService.create(userEnemy, user);
+                    if (this.lapService.findByUserId(userEnemy.getIdUser()) != null){
+                        if(!this.lapService.findByUserId(userEnemy.getIdUser()).isActive()) {
+                            Lap createdLap = this.lapService.create(userEnemy, user);
 
-                        Chat createdChat = this.chatService.createChat(createdLap);
-                        createdLap.setChat(createdChat);
+                            Chat createdChat = this.chatService.createChat(createdLap);
+                            createdLap.setChat(createdChat);
+                        }
                     }
 
                     this.userQueue.remove(userEnemy);
