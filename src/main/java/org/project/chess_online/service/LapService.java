@@ -1,6 +1,5 @@
 package org.project.chess_online.service;
 
-import org.project.chess_online.entity.Chat;
 import org.project.chess_online.entity.Lap;
 import org.project.chess_online.entity.User;
 import org.project.chess_online.repository.LapRepository;
@@ -36,13 +35,13 @@ public class LapService {
         return this.lapRepository.findByUserId(userId);
     }
 
-    public void create(User userFirst, User userSecond) {
+    public Lap create(User userFirst, User userSecond) {
         Lap tempLap = new Lap();
         tempLap.setUserFirst(userFirst);
         tempLap.setUserSecond(userSecond);
         tempLap.setGameHistory(this.gameHistoryService.create());
         tempLap.setActive(true);
 
-        this.lapRepository.save(tempLap);
+        return this.lapRepository.save(tempLap);
     }
 }

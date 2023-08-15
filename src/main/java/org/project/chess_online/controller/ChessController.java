@@ -54,11 +54,11 @@ public class ChessController {
                 if (!this.userQueue.isEmpty() && !this.userQueue.contains(user)) {
                     User userEnemy = this.userQueue.get(0);
 
-                    if(this.lapService.findByUserId(userEnemy.getIdUser()) == null ||
-                            this.lapService.findByUserId(user.getIdUser()) == null) {
-                        this.lapService.create(userEnemy, user);
-                        Lap createdLap = this.lapService.findByUserId(userId);
-                        this.chatService.createChat(createdLap);
+                    if (this.lapService.findByUserId(userEnemy.getIdUser()) == null) {
+                        Lap createdLap = this.lapService.create(userEnemy, user);
+
+                        Chat createdChat = this.chatService.createChat(createdLap);
+                        createdLap.setChat(createdChat);
                     }
 
                     this.userQueue.remove(userEnemy);
@@ -120,13 +120,9 @@ public class ChessController {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
             Lap tempLap = this.lapService.findByUserId(userId);
-            Chat tempChat = this.chatService.createChat(tempLap);
+            LapDTO tempLapDTO = this.lapFacade.lapToLapDTO(tempLap, userId);
 
-            if (tempChat != null) {
-                tempLap.setChat(tempChat);
-                LapDTO tempLapDTO = this.lapFacade.lapToLapDTO(tempLap, userId);
-                return new ResponseEntity<>(tempLapDTO, HttpStatus.OK);
-            }
+            return new ResponseEntity<>(tempLapDTO, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
