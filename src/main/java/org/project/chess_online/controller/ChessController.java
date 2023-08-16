@@ -1,10 +1,12 @@
 package org.project.chess_online.controller;
 
+import org.project.chess_online.dto.ChessPieceMoveDTO;
 import org.project.chess_online.dto.LapDTO;
 import org.project.chess_online.entity.Chat;
 import org.project.chess_online.entity.ChessPieceMove;
 import org.project.chess_online.entity.Lap;
 import org.project.chess_online.entity.User;
+import org.project.chess_online.facade.ChessPieceMoveFacade;
 import org.project.chess_online.facade.LapFacade;
 import org.project.chess_online.security.JWTTokenProvider;
 import org.project.chess_online.service.ChatService;
@@ -25,6 +27,7 @@ import java.util.List;
 public class ChessController {
     private final LapService lapService;
     private final LapFacade lapFacade;
+    private final ChessPieceMoveFacade chessPieceMoveFacade;
     private final UserService userService;
     private final ChatService chatService;
     private final GameHistoryService gameHistoryService;
@@ -32,9 +35,10 @@ public class ChessController {
     private final List<User> userQueue;
 
     @Autowired
-    public ChessController(LapService lapService, UserService userService, LapFacade lapFacade, ChatService chatService,
+    public ChessController(LapService lapService, ChessPieceMoveFacade chessPieceMoveFacade, UserService userService, LapFacade lapFacade, ChatService chatService,
                            GameHistoryService gameHistoryService, JWTTokenProvider jwtTokenProvider) {
         this.lapService = lapService;
+        this.chessPieceMoveFacade = chessPieceMoveFacade;
         this.userService = userService;
         this.lapFacade = lapFacade;
         this.chatService = chatService;
@@ -59,7 +63,6 @@ public class ChessController {
 
                         Chat createdChat = this.chatService.createChat(createdLap);
                         createdLap.setChat(createdChat);
-
                     }
 
                     this.userQueue.remove(userEnemy);
@@ -146,17 +149,37 @@ public class ChessController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/play/getMove")
-    public ResponseEntity<Boolean> getMove(@RequestHeader String token) {
+    @PostMapping("/play/checkMove")
+    public ResponseEntity<Boolean> checkMove(@RequestHeader String token) {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
             Lap tempLap = this.lapService.findByUserId(userId);
             List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 
-            return new ResponseEntity<>(tempChessPieceMoves.get(tempChessPieceMoves.size() - 1).getUser().getIdUser().equals(userId), HttpStatus.OK);
+            return ResponseEntity.ok(tempChessPieceMoves.get(tempChessPieceMoves.size() - 1).getUser().getIdUser().equals(userId));
         }
 
-        return ResponseEntity.ofNullable(false);
+        return ResponseEntity.ok(false);
+    }
+
+    @GetMapping("/play/getMove")
+    public ResponseEntity<ChessPieceMoveDTO> getMove(@RequestHeader String token) {
+        if (token != null) {
+            Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+
+            Lap tempLap = this.lapService.findByUserId(userId);
+            List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
+
+            if (tempChessPieceMoves != null && !tempChessPieceMoves.isEmpty())
+            {
+                ChessPieceMove chessPieceMove = tempChessPieceMoves.get(tempChessPieceMoves.size() - 1);
+                ChessPieceMoveDTO chessPieceMoveDTO = this.chessPieceMoveFacade.chessPieceMoveToDTO(chessPieceMove);
+
+                return ResponseEntity.ok(chessPieceMoveDTO);
+            }
+        }
+
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 }
