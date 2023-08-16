@@ -105,7 +105,7 @@ public class ChessController {
     public ResponseEntity<LapDTO> getGame(@RequestHeader String token) {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
-            if (userId > 1) {
+            if (userId >= 1) {
                 LapDTO lapDTO = this.lapFacade.lapToLapDTO(this.lapService.findByUserId(userId), userId);
 
                 return new ResponseEntity<>(lapDTO, HttpStatus.OK);

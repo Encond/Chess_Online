@@ -10,8 +10,8 @@ public class LapFacade {
         LapDTO lapDTO = new LapDTO();
 
         String tempEnemyName = currentUserId.equals(lap.getUserFirst().getIdUser()) ? lap.getUserSecond().getUsername() : lap.getUserFirst().getUsername();
-        lapDTO.setEnemyName(tempEnemyName);
 
+        lapDTO.setEnemyName(tempEnemyName);
         lapDTO.setChessPiecesColor(currentUserId.equals(lap.getUserFirst().getIdUser()));
 
         return lapDTO;
