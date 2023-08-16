@@ -22,10 +22,10 @@ public class User implements UserDetails {
     @Column(name = "id_user")
     private Long idUser;
 
-    @Column(name = "username", length = 255, nullable = false)
+    @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "password", length = 255, nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @ElementCollection(targetClass = ERole.class, fetch = FetchType.EAGER)

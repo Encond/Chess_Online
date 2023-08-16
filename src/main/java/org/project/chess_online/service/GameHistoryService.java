@@ -21,13 +21,19 @@ public class GameHistoryService {
         return this.gameHistoryRepository.save(new GameHistory());
     }
 
-    public void add(GameHistory gameHistory, ChessPieceMove chessPieceMove) {
+    public boolean add(GameHistory gameHistory, ChessPieceMove chessPieceMove) {
+        boolean result = false;
+
         if (gameHistory != null && chessPieceMove != null) {
             List<ChessPieceMove> tempChessPieceMoves = gameHistory.getChessPieceMoves();
-            tempChessPieceMoves.add(chessPieceMove);
 
-            gameHistory.setChessPieceMoves(tempChessPieceMoves);
+            if (tempChessPieceMoves != null) {
+                result = tempChessPieceMoves.add(chessPieceMove);
+                gameHistory.setChessPieceMoves(tempChessPieceMoves);
+            }
         }
+
+        return result;
     }
 
     public boolean checkLastMove(List<ChessPieceMove> chessPieceMoves, Long userId) {

@@ -63,13 +63,13 @@ public class ChessController {
 
                         Chat createdChat = this.chatService.createChat(createdLap);
                         createdLap.setChat(createdChat);
+
+                        return ResponseEntity.ok(true);
                     }
 
-                    this.userQueue.remove(userEnemy);
+                    return ResponseEntity.ok(this.userQueue.remove(userEnemy));
                 } else if (!this.userQueue.contains(user))
-                    this.userQueue.add(user);
-
-                return ResponseEntity.ok(true);
+                    return ResponseEntity.ok(this.userQueue.add(user));
             }
         }
 
@@ -83,10 +83,11 @@ public class ChessController {
             User user = this.userService.findById(userId);
 
             if (user != null) {
-                if (this.userQueue.contains(user))
+                if (this.userQueue.contains(user)) {
                     this.userQueue.remove(user);
 
-                return ResponseEntity.ok(true);
+                    return ResponseEntity.ok(true);
+                }
             }
         }
 
@@ -98,7 +99,10 @@ public class ChessController {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-            return ResponseEntity.ok(this.lapService.findByUserId(userId) != null);
+            if (userId != null && userId >= 1) {
+                boolean result = this.lapService.findByUserId(userId) != null;
+                return ResponseEntity.ok(result);
+            }
         }
 
         return ResponseEntity.ok(false);
@@ -108,10 +112,11 @@ public class ChessController {
     public ResponseEntity<LapDTO> getGame(@RequestHeader String token) {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
-            if (userId >= 1) {
+
+            if (userId != null && userId >= 1) {
                 LapDTO lapDTO = this.lapFacade.lapToLapDTO(this.lapService.findByUserId(userId), userId);
 
-                return new ResponseEntity<>(lapDTO, HttpStatus.OK);
+                return ResponseEntity.ok(lapDTO);
             }
         }
 
@@ -123,27 +128,36 @@ public class ChessController {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-            Lap tempLap = this.lapService.findByUserId(userId);
-            LapDTO tempLapDTO = this.lapFacade.lapToLapDTO(tempLap, userId);
+            if (userId != null && userId >= 1) {
+                Lap tempLap = this.lapService.findByUserId(userId);
+                LapDTO tempLapDTO = this.lapFacade.lapToLapDTO(tempLap, userId);
 
-            return new ResponseEntity<>(tempLapDTO, HttpStatus.OK);
+                return ResponseEntity.ok(tempLapDTO);
+            }
         }
 
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/play/makeMove")
-    public ResponseEntity.BodyBuilder makeMove(@RequestHeader String token, ChessPieceMove chessPieceMove) {
+    @GetMapping("/play/makeMove")
+    public ResponseEntity.BodyBuilder makeMove(@RequestHeader String token, ChessPieceMoveDTO chessPieceMoveDTO) {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
+            User user = this.userService.findById(userId);
 
-            Lap tempLap = this.lapService.findByUserId(chessPieceMove.getUser().getIdUser());
-            List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
+            if (user != null) {
+                Lap tempLap = this.lapService.findByUserId(userId);
+                List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 
-            if (this.gameHistoryService.checkLastMove(tempChessPieceMoves, userId))
-                this.gameHistoryService.add(tempLap.getGameHistory(), chessPieceMove);
+                if (this.gameHistoryService.checkLastMove(tempChessPieceMoves, userId)) {
+                    ChessPieceMove chessPieceMove = this.chessPieceMoveFacade.DTOToChessPieceMove(chessPieceMoveDTO, user);
 
-            return ResponseEntity.ok();
+                    boolean result = this.gameHistoryService.add(tempLap.getGameHistory(), chessPieceMove);
+
+                    if (result)
+                        return ResponseEntity.ok();
+                }
+            }
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND);
@@ -154,10 +168,14 @@ public class ChessController {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-            Lap tempLap = this.lapService.findByUserId(userId);
-            List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
+            if (userId != null && userId >= 1) {
+                Lap tempLap = this.lapService.findByUserId(userId);
+                List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 
-            return ResponseEntity.ok(tempChessPieceMoves.get(tempChessPieceMoves.size() - 1).getUser().getIdUser().equals(userId));
+                boolean lastMoveResult = tempChessPieceMoves.get(tempChessPieceMoves.size() - 1).getUser().getIdUser().equals(userId);
+
+                return ResponseEntity.ok(lastMoveResult);
+            }
         }
 
         return ResponseEntity.ok(false);
@@ -168,15 +186,16 @@ public class ChessController {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-            Lap tempLap = this.lapService.findByUserId(userId);
-            List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
+            if (userId != null && userId >= 1) {
+                Lap tempLap = this.lapService.findByUserId(userId);
+                List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 
-            if (tempChessPieceMoves != null && !tempChessPieceMoves.isEmpty())
-            {
-                ChessPieceMove chessPieceMove = tempChessPieceMoves.get(tempChessPieceMoves.size() - 1);
-                ChessPieceMoveDTO chessPieceMoveDTO = this.chessPieceMoveFacade.chessPieceMoveToDTO(chessPieceMove);
+                if (tempChessPieceMoves != null && !tempChessPieceMoves.isEmpty()) {
+                    ChessPieceMove chessPieceMove = tempChessPieceMoves.get(tempChessPieceMoves.size() - 1);
+                    ChessPieceMoveDTO chessPieceMoveDTO = this.chessPieceMoveFacade.chessPieceMoveToDTO(chessPieceMove);
 
-                return ResponseEntity.ok(chessPieceMoveDTO);
+                    return ResponseEntity.ok(chessPieceMoveDTO);
+                }
             }
         }
 
