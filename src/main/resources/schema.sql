@@ -1,3 +1,7 @@
+drop database if exists chess_online;
+create database if not exists chess_online;
+use chess_online;
+
 create table if not exists chess_online.user
 (
     id_user  int auto_increment

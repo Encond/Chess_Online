@@ -136,7 +136,7 @@ public class ChessController {
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/play/makeMove")
+    @PostMapping("/play/makeMove")
     public ResponseEntity.BodyBuilder makeMove(@RequestHeader String token, ChessPieceMoveDTO chessPieceMoveDTO) {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
@@ -161,7 +161,7 @@ public class ChessController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/play/checkMove")
+    @GetMapping("/play/checkMove")
     public ResponseEntity<Boolean> checkMove(@RequestHeader String token) {
         boolean lastMoveResult = false;
         if (token != null) {
