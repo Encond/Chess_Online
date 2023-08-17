@@ -1,13 +1,15 @@
-DROP DATABASE IF EXISTS chess_online;
-CREATE DATABASE IF NOT EXISTS chess_online;
-USE chess_online;
-
 create table if not exists chess_online.user
 (
     id_user  int auto_increment
         primary key,
     username varchar(255) not null,
     password varchar(255) not null
+);
+
+create table if not exists chess_online.moves_history
+(
+    id_moves_history    int auto_increment
+        primary key
 );
 
 create table if not exists chess_online.chess_piece_move
@@ -19,17 +21,11 @@ create table if not exists chess_online.chess_piece_move
     move_to_x           smallint not null,
     move_to_y           smallint not null,
     user_id             int      not null,
+    moves_history_id    int      not null,
     constraint chess_piece_move_user_id_user_fk
-        foreign key (user_id) references chess_online.user (id_user)
-);
-
-create table if not exists chess_online.moves_history
-(
-    id_moves_history    int auto_increment
-        primary key,
-    chess_piece_move_id int null,
-    constraint moves_history_chess_piece_move_id_chess_piece_move_fk
-        foreign key (chess_piece_move_id) references chess_online.chess_piece_move (id_chess_piece_move)
+        foreign key (user_id) references chess_online.user (id_user),
+    constraint chess_piece_move_moves_history_id_moves_history_fk
+        foreign key (moves_history_id) references moves_history (id_moves_history)
 );
 
 create table if not exists chess_online.lap

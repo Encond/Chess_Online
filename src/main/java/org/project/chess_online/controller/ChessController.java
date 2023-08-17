@@ -2,10 +2,7 @@ package org.project.chess_online.controller;
 
 import org.project.chess_online.dto.ChessPieceMoveDTO;
 import org.project.chess_online.dto.LapDTO;
-import org.project.chess_online.entity.Chat;
-import org.project.chess_online.entity.ChessPieceMove;
-import org.project.chess_online.entity.Lap;
-import org.project.chess_online.entity.User;
+import org.project.chess_online.entity.*;
 import org.project.chess_online.facade.ChessPieceMoveFacade;
 import org.project.chess_online.facade.LapFacade;
 import org.project.chess_online.security.JWTTokenProvider;
@@ -149,14 +146,15 @@ public class ChessController {
                 Lap tempLap = this.lapService.findByUserId(userId);
                 List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 
-                if (this.gameHistoryService.checkLastMove(tempChessPieceMoves, userId)) {
-                    ChessPieceMove chessPieceMove = this.chessPieceMoveFacade.DTOToChessPieceMove(chessPieceMoveDTO, user);
+                if (tempChessPieceMoves != null)
+                    if (tempChessPieceMoves.isEmpty() || this.gameHistoryService.checkLastMove(tempLap.getGameHistory(), userId)) {
+                        ChessPieceMove chessPieceMove = this.chessPieceMoveFacade.DTOToChessPieceMove(chessPieceMoveDTO, user);
 
-                    boolean result = this.gameHistoryService.add(tempLap.getGameHistory(), chessPieceMove);
+                        boolean result = this.gameHistoryService.add(tempLap.getGameHistory().getIdGameHistory(), chessPieceMove);
 
-                    if (result)
-                        return ResponseEntity.ok();
-                }
+                        if (result)
+                            return ResponseEntity.ok();
+                    }
             }
         }
 
@@ -165,20 +163,19 @@ public class ChessController {
 
     @PostMapping("/play/checkMove")
     public ResponseEntity<Boolean> checkMove(@RequestHeader String token) {
+        boolean lastMoveResult = false;
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
             if (userId != null && userId >= 1) {
                 Lap tempLap = this.lapService.findByUserId(userId);
-                List<ChessPieceMove> tempChessPieceMoves = tempLap.getGameHistory().getChessPieceMoves();
 
-                boolean lastMoveResult = tempChessPieceMoves.get(tempChessPieceMoves.size() - 1).getUser().getIdUser().equals(userId);
-
-                return ResponseEntity.ok(lastMoveResult);
+                GameHistory tempGameHistory = tempLap.getGameHistory();
+                lastMoveResult = this.gameHistoryService.checkLastMove(tempGameHistory, userId);
             }
         }
 
-        return ResponseEntity.ok(false);
+        return ResponseEntity.ok(lastMoveResult);
     }
 
     @GetMapping("/play/getMove")

@@ -19,15 +19,10 @@ public class GameHistory {
     @Column(name = "id_moves_history")
     private Long idGameHistory;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_chess_piece_move")
+    @OneToMany(mappedBy = "gameHistory", fetch = FetchType.EAGER)
     private List<ChessPieceMove> chessPieceMoves;
 
     @OneToOne(mappedBy = "gameHistory")
     @JsonIgnore
     private Lap lap;
-
-    public GameHistory() {
-        this.chessPieceMoves = new ArrayList<ChessPieceMove>();
-    }
 }
