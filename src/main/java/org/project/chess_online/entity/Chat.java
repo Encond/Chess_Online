@@ -21,10 +21,6 @@ public class Chat {
     @JoinColumn(name = "lap_id", nullable = false)
     private Lap lap;
 
-    @OneToMany(mappedBy = "chat")
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Message> messages;
-
-    public Chat() {
-        this.messages = new ArrayList<Message>();
-    }
 }

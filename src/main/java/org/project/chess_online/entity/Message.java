@@ -3,6 +3,7 @@ package org.project.chess_online.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -11,7 +12,6 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Table(name = "message")
 public class Message {
     @Id
@@ -29,4 +29,8 @@ public class Message {
     @JoinColumn(name = "chat_id", nullable = false)
     @JsonIgnore
     private Chat chat;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

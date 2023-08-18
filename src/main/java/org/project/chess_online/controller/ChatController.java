@@ -1,8 +1,10 @@
 package org.project.chess_online.controller;
 
+import org.project.chess_online.dto.MessageDTO;
 import org.project.chess_online.entity.Chat;
 import org.project.chess_online.entity.Lap;
 import org.project.chess_online.entity.Message;
+import org.project.chess_online.facade.MessageFacade;
 import org.project.chess_online.security.JWTTokenProvider;
 import org.project.chess_online.service.ChatService;
 import org.project.chess_online.service.LapService;
@@ -20,27 +22,32 @@ public class ChatController {
     private final ChatService chatService;
     private final MessageService messageService;
     private final LapService lapService;
+    private final MessageFacade messageFacade;
     private final JWTTokenProvider jwtTokenProvider;
 
     @Autowired
-    public ChatController(ChatService chatService, MessageService messageService, LapService lapService, JWTTokenProvider jwtTokenProvider) {
+    public ChatController(ChatService chatService, MessageService messageService, LapService lapService, MessageFacade messageFacade, JWTTokenProvider jwtTokenProvider) {
         this.chatService = chatService;
         this.messageService = messageService;
         this.lapService = lapService;
+        this.messageFacade = messageFacade;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @GetMapping("/messages/get")
-    public ResponseEntity<List<Message>> getMessages(@RequestHeader String token) {
+    public ResponseEntity<List<MessageDTO>> getMessages(@RequestHeader String token) {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
 
-            Lap createdLap = this.lapService.findByUserId(userId);
+            Lap tempLap = this.lapService.findByUserId(userId);
 
-            Chat tempChat = this.chatService.findByLapId(createdLap.getIdLap());
+            Chat tempChat = this.chatService.findByLapId(tempLap.getIdLap());
             List<Message> messages = tempChat.getMessages();
 
-            return new ResponseEntity<>(messages, HttpStatus.OK);
+            List<MessageDTO> messageDTOS = this.messageFacade.messageToMessageDTO(messages, userId.equals(tempLap.getUserFirst().getIdUser()));
+
+            if (messageDTOS != null)
+                return new ResponseEntity<>(messageDTOS, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

@@ -8,7 +8,6 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Table(name = "lap")
 public class Lap {
     @Id
@@ -28,13 +27,13 @@ public class Lap {
     @JoinColumn(name = "user_id_winner")
     private User userWinner;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "moves_history_id", referencedColumnName = "id_moves_history")
     private GameHistory gameHistory;
 
     @Column(name = "active")
     private boolean active;
 
-    @OneToOne(mappedBy = "lap")
+    @OneToOne(mappedBy = "lap", cascade = CascadeType.ALL)
     private Chat chat;
 }

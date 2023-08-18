@@ -19,7 +19,7 @@ public class GameHistory {
     @Column(name = "id_moves_history")
     private Long idGameHistory;
 
-    @OneToMany(mappedBy = "gameHistory", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "gameHistory", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ChessPieceMove> chessPieceMoves;
 
     @OneToOne(mappedBy = "gameHistory")
