@@ -137,7 +137,7 @@ public class ChessController {
     }
 
     @PostMapping("/play/makeMove")
-    public ResponseEntity.BodyBuilder makeMove(@RequestHeader String token, ChessPieceMoveDTO chessPieceMoveDTO) {
+    public ResponseEntity<Boolean> makeMove(@RequestHeader String token, @RequestBody ChessPieceMoveDTO chessPieceMoveDTO) {
         if (token != null) {
             Long userId = this.jwtTokenProvider.getUserIdFromToken(token);
             User user = this.userService.findById(userId);
@@ -153,12 +153,12 @@ public class ChessController {
                         boolean result = this.gameHistoryService.add(tempLap.getGameHistory().getIdGameHistory(), chessPieceMove);
 
                         if (result)
-                            return ResponseEntity.ok();
+                            return ResponseEntity.ok(true);
                     }
             }
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND);
+        return ResponseEntity.ok(false);
     }
 
     @GetMapping("/play/checkMove")
