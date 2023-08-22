@@ -45,8 +45,10 @@ public class GameHistoryService {
         if (gameHistory != null) {
             List<ChessPieceMove> chessPieceMoves = gameHistory.getChessPieceMoves();
 
-            if (!chessPieceMoves.isEmpty())
-                return chessPieceMoves.get(chessPieceMoves.size() - 1).getUser().getIdUser().equals(userId);
+            if (!chessPieceMoves.isEmpty()) {
+                boolean result = !chessPieceMoves.get(chessPieceMoves.size() - 1).getUser().getIdUser().equals(userId);
+                return result;
+            }
         }
 
         return false;
